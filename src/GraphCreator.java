@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class GraphCreator implements ActionListener, MouseListener {
@@ -18,11 +19,16 @@ public class GraphCreator implements ActionListener, MouseListener {
 	JButton nodeB = new JButton("Node");
 	JButton edgeB = new JButton("Edge");
 	JTextField labelsTF = new JTextField("A");
+	JTextField firstNode = new JTextField("First");
+	JTextField secondNode = new JTextField("Second");
+	JButton connectedB = new JButton("Test Connected");
 	Container west = new Container();
+	Container east = new Container();
 	final int NODE_CREATE = 0;
 	final int EDGE_FIRST = 1;
 	final int EDGE_SECOND = 2;
 	int state = NODE_CREATE;
+	Node first = null;
 	
 	public GraphCreator() {
 		frame.setSize(800,600);
@@ -37,6 +43,12 @@ public class GraphCreator implements ActionListener, MouseListener {
 		edgeB.setBackground(Color.LIGHT_GRAY);
 		west.add(labelsTF);
 		frame.add(west, BorderLayout.WEST);
+		east.setLayout(new GridLayout(3,1));
+		east.add(firstNode);
+		east.add(secondNode);
+		east.add(connectedB);
+		connectedB.addActionListener(this);
+		frame.add(east, BorderLayout.EAST);
 		panel.addMouseListener(this);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,8 +69,26 @@ public class GraphCreator implements ActionListener, MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (state == NODE_CREATE) {
-			
+			panel.addNode(e.getX(), e.getY(), labelsTF.getText());
 		}
+		else if (state == EDGE_FIRST) {
+			Node n = panel.getNode(e.getX(), e.getY());
+			if (n != null) {
+				first = n;
+				state = EDGE_SECOND;
+				n.setHighlighted(true);
+			}
+		}
+		else if (state == EDGE_SECOND) {
+			Node n = panel.getNode(e.getX(), e.getY());
+			if (n != null && !first.equals(n)) {
+				first.setHighlighted(false);
+				panel.addEdge(first, n, labelsTF.getText());
+				first = null;
+				state = EDGE_FIRST;
+			}
+		}
+		frame.repaint();
 	}
 
 	@Override
@@ -78,6 +108,30 @@ public class GraphCreator implements ActionListener, MouseListener {
 			edgeB.setBackground(Color.GREEN);
 			nodeB.setBackground(Color.LIGHT_GRAY);
 			state = EDGE_FIRST;
+			panel.stopHighlighting();
+			frame.repaint();
+		}
+		if (e.getSource().equals(connectedB)) {
+			if (panel.nodeExists(firstNode.getText()) == false) {
+				JOptionPane.showMessageDialog(frame, "First Node Is Not In Your Graph.");
+			}
+			else if (panel.nodeExists(secondNode.getText()) == false) {
+				JOptionPane.showMessageDialog(frame, "Second Node Is Not In Your Graph.");
+			}
+			else {
+				
+			}
 		}
 	}
+	
+	/*
+	 * Adjacency Matrix
+	 * 
+	 *		A	B	C
+	 * A	1	1	1
+	 * B	1	1	0
+	 * C	1	0	1
+	 *  
+	 */
+	
 }

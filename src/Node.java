@@ -1,9 +1,16 @@
-
 public class Node {
 
 	int x;
 	int y;
 	String label;
+	boolean highlighted;
+	
+	public Node(int newx, int newy, String newlabel) {
+		x = newx;
+		y = newy;
+		label = newlabel;
+		highlighted = false;
+	}
 	
 	public int getX() {
 		return x;
@@ -22,5 +29,11 @@ public class Node {
 	}
 	public void setLabel(String label) {
 		this.label = label;
+	}
+	public boolean getHighlighted() {
+		return highlighted;
+	}
+	public void setHighlighted(boolean highlighted) {
+		this.highlighted = highlighted;
 	}
 }
