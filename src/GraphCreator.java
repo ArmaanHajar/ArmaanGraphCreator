@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -119,7 +120,32 @@ public class GraphCreator implements ActionListener, MouseListener {
 				JOptionPane.showMessageDialog(frame, "Second Node Is Not In Your Graph.");
 			}
 			else {
-				
+				Queue queue = new Queue();
+				ArrayList<String> connectedList = new ArrayList<String>();
+				connectedList.add(panel.getNode(firstNode.getText()).getLabel());
+				ArrayList<String> edges = panel.getConnectedLabels(firstNode.getText());
+				for (int a = 0; a < edges.size(); a++) {
+					queue.enqueue(edges.get(a));
+				}
+				while (queue.isEmpty() == false) {
+					String currentNode = queue.dequeue();
+					if (connectedList.contains(currentNode) == false) {
+						connectedList.add(currentNode);
+					}
+					edges = panel.getConnectedLabels(currentNode);
+					for (int a = 0; a < edges.size(); a++) {
+						if (connectedList.contains(edges.get(a)) == false) {
+							queue.enqueue(edges.get(a));
+						}
+					}
+				}
+				if (connectedList.contains(secondNode.getText())) {
+					JOptionPane.showMessageDialog(frame, "Connected!");
+				}
+				else {
+					JOptionPane.showMessageDialog(frame, "Not Connected.");
+
+				}
 			}
 		}
 	}
