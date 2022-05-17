@@ -11,6 +11,18 @@ public class Edge {
 		label = newlabel;
 	}
 	
+	public Node getOtherEnd(Node n) {
+		if (first.equals(n)) {
+			return second;
+		}
+		else if (second.equals(n)) {
+			return first;
+		}
+		else {
+			return null;
+		}
+	}
+	
 	public Node getFirst() {
 		return first;
 	}

@@ -25,11 +25,15 @@ public class GraphCreator implements ActionListener, MouseListener {
 	JButton connectedB = new JButton("Test Connected");
 	Container west = new Container();
 	Container east = new Container();
+	Container south = new Container();
+	JTextField salesmanStartTF = new JTextField("A");
+	JButton salesmanB = new JButton("Shortest Path");
 	final int NODE_CREATE = 0;
 	final int EDGE_FIRST = 1;
 	final int EDGE_SECOND = 2;
 	int state = NODE_CREATE;
 	Node first = null;
+	ArrayList<ArrayList<Node>> completed = new ArrayList<ArrayList<Node>>();
 	
 	public GraphCreator() {
 		frame.setSize(800,600);
@@ -51,6 +55,11 @@ public class GraphCreator implements ActionListener, MouseListener {
 		connectedB.addActionListener(this);
 		frame.add(east, BorderLayout.EAST);
 		panel.addMouseListener(this);
+		south.setLayout(new GridLayout(1,2));
+		south.add(salesmanStartTF);
+		south.add(salesmanB);
+		salesmanB.addActionListener(this);
+		frame.add(south, BorderLayout.SOUTH);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -83,10 +92,24 @@ public class GraphCreator implements ActionListener, MouseListener {
 		else if (state == EDGE_SECOND) {
 			Node n = panel.getNode(e.getX(), e.getY());
 			if (n != null && !first.equals(n)) {
-				first.setHighlighted(false);
-				panel.addEdge(first, n, labelsTF.getText());
-				first = null;
-				state = EDGE_FIRST;
+				String s = labelsTF.getText();
+				boolean valid = true;
+				for (int a = 0; a < s.length(); a++) {
+					if (Character.isDigit(s.charAt(a)) == false) {
+						valid = false;
+					}
+				}
+				if (valid == true) {
+					first.setHighlighted(false);
+					panel.addEdge(first, n, labelsTF.getText());
+					first = null;
+					state = EDGE_FIRST;
+					System.out.println("valid");
+				}
+				else {
+					JOptionPane.showMessageDialog(frame, "Can Only Have Digits in Edge Labels.");
+					System.out.println("invalid");
+				}
 			}
 		}
 		frame.repaint();
@@ -148,6 +171,39 @@ public class GraphCreator implements ActionListener, MouseListener {
 				}
 			}
 		}
+		if (e.getSource().equals(salesmanB)) {
+			if (panel.getNode(salesmanStartTF.getText()) != null) {
+				travelling(panel.getNode(salesmanStartTF.getText()), new ArrayList<Node>(), 0);
+				// make sure completed has a path
+				// find the shortest path, print out its value, and the path
+			}
+			else {
+				JOptionPane.showMessageDialog(frame, "Not a Valid Starting Node!");
+			}
+		}
+	}
+	
+	public void travelling(Node n, ArrayList<Node> path, int total) {
+		//if the number of nodes in the path is equal to the number of nodes
+		//	add this path to the completed list
+		//	remove the last thing in the path
+		//	return
+		//else
+		for (int a = 0; a < edgeList.size(); a++) {
+			Edge e = edgeList.get(a);
+			if (e.getOtherEnd(n) != null) {
+				if (path.contains(e.getOtherEnd(n)) == false) {
+					path.add(e.getOtherEnd(n));
+					travelling(e.getOtherEnd(n), path, total + Integer.parseInt(e.getLabel()));
+				}
+			}
+		}
+		//	for each edge
+		//		see if they are connected to the current node
+		//		if they are not already in the path
+		//		 add node to path
+		//		 travelling(node, path, total + edge cost);
+		//remove the last thing in the path
 	}
 	
 	/*
