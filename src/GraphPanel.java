@@ -1,22 +1,25 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JPanel;
 
 public class GraphPanel extends JPanel {
 	
+    // creates array lists to contain the nodes and edges
 	ArrayList<Node> nodeList = new ArrayList<Node>();
 	ArrayList<Edge> edgeList = new ArrayList<Edge>();
+    // sets size of nodes
 	int circleRadius = 20;
 	
+    // array list for adjacency matrix
 	ArrayList<ArrayList<Boolean>> adjacency = new ArrayList<ArrayList<Boolean>>();
 	
 	public GraphPanel() {
 		super();
 	}
 	
+    // edits adjacency matrix to see if nodes are connected
 	public ArrayList<String> getConnectedLabels(String label) {
 		ArrayList<String> toReturn =new ArrayList<String>();
 		int b = getIndex(label);
@@ -28,6 +31,7 @@ public class GraphPanel extends JPanel {
 		return toReturn;
 	}
 	
+    // pritns adjaceny matrix
 	public void printAdjacency() {
 		System.out.println();
 		for (int a = 0; a < adjacency.size(); a++) {
@@ -38,6 +42,7 @@ public class GraphPanel extends JPanel {
 		}
 	}
 	
+    // adds a node to the adjacency matrix
 	public void addNode(int newx, int newy, String newlabel) {
 		nodeList.add(new Node(newx, newy, newlabel));
 		adjacency.add(new ArrayList<Boolean>());
@@ -50,6 +55,7 @@ public class GraphPanel extends JPanel {
 		printAdjacency();
 	}
 	
+    // adds edge (a new connection) to adjacency martix
 	public void addEdge(Node first, Node second, String newlabel) {
 		edgeList.add(new Edge(first, second, newlabel));
 		int firstIndex = 0;
@@ -67,18 +73,20 @@ public class GraphPanel extends JPanel {
 		printAdjacency();
 	}
 	
-	public Node getNode(int x, int y) {
-		for (int a = 0; a < nodeList.size(); a++) {
+    // returns a node
+	public Node getNode(int x, int y)  {
+		for (int a  = 0; a < nodeList.size(); a++) {
 			Node node = nodeList.get(a);
-			// a squared plus b squared = c squared
+			// a squared + b squared = c squared
 			double radius = Math.sqrt(Math.pow(x - node.getX(), 2) + Math.pow(y - node.getY(), 2));
-			if (radius < circleRadius) {
+			if (radius < circleRadius / 2) {
 				return nodeList.get(a);
 			}
 		}
 		return null;
 	}
 	
+	// returns a node given its name
 	public Node getNode(String s) {
 		for (int a = 0; a < nodeList.size(); a++) {
 			Node node = nodeList.get(a);
@@ -89,6 +97,7 @@ public class GraphPanel extends JPanel {
 		return null;
 	}
 	
+    // returns node index
 	public int getIndex(String s) {
 		for (int a = 0; a < nodeList.size(); a++) {
 			Node node = nodeList.get(a);
@@ -99,6 +108,7 @@ public class GraphPanel extends JPanel {
 		return -1;
 	}
 	
+    // checks if node exists
 	public boolean nodeExists(String s) {
 		for (int a = 0; a < nodeList.size(); a++) {
 			if (s.equals(nodeList.get(a).getLabel())) {
@@ -108,20 +118,25 @@ public class GraphPanel extends JPanel {
 		return false;
 	}
 
+    // paints components on graph
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		// draw my stuff
 		for (int a = 0; a < nodeList.size(); a++) {
+            // sets node color to red when selected
 			if (nodeList.get(a).getHighlighted() == true) {
 				g.setColor(Color.RED);
 			}
 			else {
 				g.setColor(Color.BLACK);
 			}
+            // draws circle (node) on graph
 			g.drawOval(nodeList.get(a).getX() - circleRadius,
 					nodeList.get(a).getY() - circleRadius, circleRadius * 2, circleRadius * 2);
+            // draws line (edge) on graph
 			g.drawString(nodeList.get(a).getLabel(), nodeList.get(a).getX(), nodeList.get(a).getY());
 		}
+        // connects edge between two nodes
 		for (int a = 0; a < edgeList.size(); a++) {
 			g.setColor(Color.BLACK);
 			g.drawLine(edgeList.get(a).getFirst().getX(),
@@ -138,9 +153,20 @@ public class GraphPanel extends JPanel {
 		}
 	}
 
+    // removes highlighting on all highlighted nodes
 	public void stopHighlighting() {
 		for (int a = 0; a < nodeList.size(); a++) {
 			nodeList.get(a).setHighlighted(false);
 		}
+	}
+
+    // returns edgeList
+    public ArrayList<Edge> getEdgeList(){
+		return edgeList;
+	}
+	
+    // returns nodeList
+	public ArrayList<Node> getNodeList(){
+		return nodeList;
 	}
 }
